@@ -9,7 +9,7 @@ class Specimen(models.Model):
                                      primary_key=True)
 
     class Meta:
-        db_table = u'specimen'
+        db_table = 'specimen'
         verbose_name = 'specimen'
         verbose_name_plural = 'specimens'
 
@@ -18,7 +18,7 @@ class Subject(models.Model):
     study_id = models.TextField(primary_key=True, db_column='study_id')
 
     class Meta:
-        db_table = u'subject'
+        db_table = 'subject'
         verbose_name = 'subject'
         verbose_name_plural = 'subjects'
 
@@ -29,4 +29,4 @@ class Link(models.Model):
     study_id = models.ForeignKey(Subject, db_column='study_id')
 
     class Meta:
-        db_table = u'link'
+        db_table = 'link'

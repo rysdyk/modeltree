@@ -42,7 +42,7 @@ class Command(BaseCommand):
         and Django settings), then run this command.
         """
         if len(argv) > 2 and not argv[2].startswith('-') and \
-                argv[2] in self.commands.keys():
+                argv[2] in list(self.commands.keys()):
 
             subcommand = self.commands[argv[2]]
             klass = self.get_subcommand(subcommand)
@@ -63,7 +63,7 @@ class Command(BaseCommand):
         self.execute(*args, **options.__dict__)
 
     def handle(self, *args, **options):
-        if not args or args[0] not in self.commands.keys():
+        if not args or args[0] not in list(self.commands.keys()):
             return self.print_help('./manage.py', 'modeltree')
         subcommand, args = args[0], args[1:]
 

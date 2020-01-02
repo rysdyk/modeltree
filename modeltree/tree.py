@@ -298,7 +298,7 @@ class ModelTree(object):
         self._build()
 
     def __repr__(self):
-        return u'<ModelTree for {0}>'.format(self.root_model.__name__)
+        return '<ModelTree for {0}>'.format(self.root_model.__name__)
 
     def _get_local_model(self, model_name, app_name=None):
         "Attempts to get a model from local cache."
@@ -333,7 +333,7 @@ class ModelTree(object):
             # Attempt to find the model based on the name. Since we don't
             # have the app name, if a model of the same name exists multiple
             # times, we need to throw an error.
-            for app, app_models in apps.app_models.items():
+            for app, app_models in list(apps.app_models.items()):
                 if model_name in app_models:
                     if model is not None:
                         raise ModelNotUnique('The model "{0}" is not unique. '
@@ -509,7 +509,7 @@ class ModelTree(object):
                 return False
 
         # Check if the join is allowed by a required rule
-        for (_source, _target), _field in self._required_joins.items():
+        for (_source, _target), _field in list(self._required_joins.items()):
             if _target == target:
                 if _source != source:
                     return False
@@ -806,7 +806,7 @@ class LazyModelTrees(object):
         "Returns the number of initialized trees."
         return len(self._modeltrees)
 
-    def __nonzero__(self):
+    def __bool__(self):
         return True
 
     def _get_model_label(self, model):
