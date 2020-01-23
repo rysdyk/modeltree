@@ -2,10 +2,21 @@ import sys
 from django.db import models
 from django.db.models import FieldDoesNotExist
 from django.db.models.constants import LOOKUP_SEP
-from django.db.models.sql.constants import QUERY_TERMS
+# from django.db.models.sql.constants import QUERY_TERMS
 from django.utils.termcolors import colorize
 from modeltree.tree import trees, ModelDoesNotExist, ModelNotRelated, \
     ModelNotUnique
+
+try:
+    from django.db.models.sql.constants import QUERY_TERMS
+except ImportError:
+    # Django 2.0+ does not have QUERY_TERMS anymore
+    QUERY_TERMS = {
+        'contains', 'day', 'endswith', 'exact', 'gt', 'gte', 'hour',
+        'icontains', 'iendswith', 'iexact', 'in', 'iregex', 'isnull',
+        'istartswith', 'lt', 'lte', 'minute', 'month', 'range', 'regex',
+        'search', 'second', 'startswith', 'week_day', 'year',
+    }
 
 
 class InvalidLookup(Exception):

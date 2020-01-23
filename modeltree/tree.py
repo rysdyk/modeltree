@@ -578,8 +578,8 @@ class ModelTree(object):
             f for f in fields
             if (f.one_to_one or f.many_to_many or f.many_to_one)
             and (f.concrete or not f.auto_created)
-            and f.rel is not None  # Generic foreign keys do not define rel.
-            and self._join_allowed(f.model, f.rel.to, f)
+            and f.remote_field is not None  # Generic foreign keys do not define rel.
+            and self._join_allowed(f.model, f.remote_field.related_model, f)
         ]
         reverse_fields = [
             f for f in fields
