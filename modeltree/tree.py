@@ -1,7 +1,6 @@
 import inspect
 import warnings
 
-import six
 from django.apps import apps
 from django.db import models
 from django.conf import settings
@@ -38,7 +37,6 @@ class ModelNotRelated(ModelLookupError):
     pass
 
 
-@six.python_2_unicode_compatible
 class ModelTreeNode(object):
     def __init__(self, model, parent=None, relation=None, reverse=None,
                  related_name=None, accessor_name=None, nullable=False,
@@ -534,6 +532,10 @@ class ModelTree(object):
             - the model is going back the same path it came from
             - the model is circling back to the root_model
             - the model does not come from an explicitly declared parent model
+
+
+        This is running in a recursive way with _find_relations
+        They keep calling each other as they go through all the models
         """
         # Reverse relationships
         if reverse and '+' in related_name:
@@ -563,7 +565,12 @@ class ModelTree(object):
             parent.children.append(node)
 
     def _find_relations(self, node, depth=0):
-        """Finds all relations given a node."""
+        """
+        Finds all relations given a node.
+        
+        This runs in a recursive way with _add_node. They keep calling each
+        other based on depth.
+        """
         depth += 1
 
         model = node.model
@@ -574,12 +581,14 @@ class ModelTree(object):
                         key=lambda f: bool(f.many_to_many))
 
         # determine relational fields to determine paths
+        # f.rel changed to f.remote_field for django2
+        # f.rel.to changed to f.remote_field.model for django2
         forward_fields = [
             f for f in fields
             if (f.one_to_one or f.many_to_many or f.many_to_one)
             and (f.concrete or not f.auto_created)
             and f.remote_field is not None  # Generic foreign keys do not define rel.
-            and self._join_allowed(f.model, f.remote_field.related_model, f)
+            and self._join_allowed(f.model, f.remote_field.model, f)
         ]
         reverse_fields = [
             f for f in fields
@@ -597,11 +606,12 @@ class ModelTree(object):
                 return 'foreignkey'
 
         # Iterate over forward relations
+        # changed f.rel.to to f.remote_field.model for django2
         for f in forward_fields:
             null = f.many_to_many or f.null
             kwargs = {
                 'parent': node,
-                'model': f.rel.to,
+                'model': f.remote_field.model,
                 'relation': get_relation_type(f),
                 'reverse': False,
                 'related_name': f.name,
@@ -823,7 +833,7 @@ class LazyModelTrees(object):
             alias = MODELTREE_DEFAULT_ALIAS
 
         # Qualified app.model label
-        elif isinstance(alias, six.string_types) and '.' in alias:
+        elif isinstance(alias, str) and '.' in alias:
             app_name, model_name = alias.split('.', 1)
             model = apps.get_model(app_name, model_name)
 
