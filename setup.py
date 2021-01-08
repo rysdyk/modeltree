@@ -12,7 +12,7 @@ kwargs = {
     'include_package_data': True,
 
     # Dependencies
-    'install_requires': ['django>=1.8,<=1.12', 'six>=1.11'],
+    'install_requires': ['Django>2.0,<3.0', 'six>=1.11'],
 
     'test_suite': 'test_suite',
 
@@ -28,8 +28,7 @@ kwargs = {
     'classifiers': [
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.8',
         'Framework :: Django',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
